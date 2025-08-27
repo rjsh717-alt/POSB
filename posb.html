@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>POSB Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+    h2 {
+      background: linear-gradient(to right, #3a6073, #46b798);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      font-weight: 600;
+      font-size: 26px;
+    }
+    .filter-box {
+      background: linear-gradient(to right, #e0f7fa, #e8f5e9, #fff8e1);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 95%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .filter-box strong {
+      font-size: 20px;
+      width: 100%;
+      color: #222;
+    }
+    .selectors {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .selectors select,
+    .selectors input[type='date'] {
+      flex: 1 1 15%;
+      padding: 12px;
+      font-size: 17px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      min-width: 160px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 17px;
+      font-weight: bold;
+    }
+    button {
+      background: linear-gradient(to right, #3a6073, #46b798);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: linear-gradient(to right, #34515e, #388e7d);
+    }
+    
+    /* Account Range Filters Section - Single Horizontal Line */
+    .account-range-section {
+      background: linear-gradient(to right, #fafafa, #f8f9fa, #ffffff);
+      border: 2px solid #e0e0e0;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 95%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* Horizontal layout for all controls including the button */
+    .range-controls-horizontal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 5px;
+    }
+    
+    .account-range-btn {
+      background: linear-gradient(to right, #e3f2fd, #f3e5f5);
+      color: #1565c0;
+      border: 2px solid #90caf9;
+      padding: 12px 25px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+      white-space: nowrap;
+    }
+    .account-range-btn:hover {
+      background: linear-gradient(to right, #bbdefb, #e1bee7);
+      color: #0d47a1;
+      border-color: #64b5f6;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+    }
+    
+    .office-type-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .office-type-label {
+      font-weight: 600;
+      color: #424242;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+    
+    .account-range-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .account-range-label {
+      font-weight: 600;
+      color: #424242;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+    
+    .range-controls-horizontal select {
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      box-sizing: border-box;
+      background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+      color: #333;
+      min-width: 140px;
+      transition: all 0.3s ease;
+    }
+    .range-controls-horizontal select:focus {
+      outline: none;
+      border-color: #2196f3;
+      box-shadow: 0 0 10px rgba(33, 150, 243, 0.25);
+      background: #ffffff;
+    }
+    
+    .range-controls-horizontal input[type='number'] {
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      box-sizing: border-box;
+      width: 100px;
+      background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    .range-controls-horizontal input[type='number']:focus {
+      outline: none;
+      border-color: #2196f3;
+      box-shadow: 0 0 10px rgba(33, 150, 243, 0.25);
+      background: #ffffff;
+    }
+    
+    .range-separator {
+      color: #757575;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 0 5px;
+    }
+    
+    .apply-filter-btn {
+      background: linear-gradient(to right, #4fc3f7, #29b6f6);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(41, 182, 246, 0.3);
+      white-space: nowrap;
+    }
+    .apply-filter-btn:hover {
+      background: linear-gradient(to right, #29b6f6, #0288d1);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(41, 182, 246, 0.4);
+    }
+    
+    /* Initially hide the filter controls */
+    .filter-controls {
+      display: none;
+      flex: 1;
+    }
+    .filter-controls.show {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    /* Analytics Section Styles */
+    .analytics-section {
+      background: linear-gradient(to right, #e8f4f8, #f0f8f0, #fff9e8);
+      border: 2px solid #d1e7dd;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+    .analytics-controls-horizontal {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .analytics-btn {
+      background: linear-gradient(145deg, #17a2b8, #138496);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+    }
+    .analytics-btn:hover {
+      background: linear-gradient(145deg, #138496, #117a8b);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(23, 162, 184, 0.4);
+    }
+    .analytics-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+    }
+    .analytics-options {
+      margin-top: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+    }
+    .analytics-menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .analytics-option-btn {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 15px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #495057;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .analytics-option-btn:hover {
+      background: linear-gradient(145deg, #e9ecef, #dee2e6);
+      border-color: #17a2b8;
+      color: #17a2b8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .analytics-option-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Sort Icons Styles */
+    .sort-icons {
+      display: inline-flex;
+      flex-direction: column;
+      margin-left: 8px;
+      gap: 2px;
+    }
+    .sort-icon {
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #999;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .sort-icon:hover {
+      color: #2e7d32;
+      transform: scale(1.2);
+    }
+    .sort-icon.active {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    
+    #resultArea {
+      margin: 20px;
+      overflow-x: auto;
+      font-family: 'Roboto', sans-serif;
+    }
+    #exportButtons {
+      display: none;
+      justify-content: flex-end;
+      gap: 10px;
+      margin: 0 20px 10px;
+    }
+    #exportButtons button {
+      background: linear-gradient(to right, #daa520, #da9100);
+    }
+    #exportButtons button:hover {
+      background: linear-gradient(to right, #c8951b, #c57900);
+    }
+    
+    @media screen and (max-width: 768px) {
+      .selectors {
+        flex-direction: column;
+      }
+      .selectors select,
+      .selectors input[type='date'] {
+        width: 100%;
+      }
+      .actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .range-controls-horizontal {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .office-type-group,
+      .account-range-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .filter-controls {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+      }
+      .analytics-menu {
+        grid-template-columns: 1fr;
+      }
+      .analytics-option-btn {
+        font-size: 13px;
+        padding: 12px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Product Wise A/C Report</h2>
+  <div class="filter-box">
+    <strong>Select Options</strong>
+    <div class="selectors">
+      <select id="circleSelect" onchange="fetchRegions()">
+        <option value="">Select Circle</option>
+      </select>
+      <select id="regionSelect" onchange="fetchDivisions()" disabled>
+        <option value="">Select Region</option>
+      </select>
+      <select id="divisionSelect" disabled>
+        <option value="">Select Division</option>
+      </select>
+      <input type="date" id="startDate" />
+      <input type="date" id="endDate" />
+    </div>
+    <div class="actions">
+      <div class="radio-group">
+        <label><input type="radio" name="reportType" value="open" checked /> <strong>Account Opened Details</strong></label>
+        <label><input type="radio" name="reportType" value="close" /> <strong>Account Closed Details</strong></label>
+        <label><input type="radio" name="reportType" value="net" /> <strong>Net Addition of Accounts and Certificates</strong></label>
+        <label><input type="radio" name="reportType" value="nil" /> <strong>NIL Account Offices</strong></label>
+      </div>
+      <button onclick="submitPOSB()">Submit</button>
+    </div>
+  </div>
+  <!-- Account Range Filters Section - All in one horizontal line -->
+  <div class="account-range-section">
+    <div class="range-controls-horizontal">
+      <button class="account-range-btn" onclick="toggleAccountRangePanel()">
+        🔍 Account Range Filters
+      </button>
+      
+      <div id="filterControls" class="filter-controls">
+        <div class="office-type-group">
+          <span class="office-type-label">Office Type</span>
+          <select id="officeTypeFilter">
+            <option value="all">All Types</option>
+             <option value="HO">Head Office (HO)</option>
+            <option value="SO">Sub Office (SO)</option>
+            <option value="BO">Branch Office (BO)</option>
+          </select>
+        </div>
+        
+        <div class="account-range-group">
+          <span class="account-range-label">Account Range</span>
+          <input type="number" id="minAccounts" placeholder="Min" min="0" />
+          <span class="range-separator">to</span>
+          <input type="number" id="maxAccounts" placeholder="Max" min="0" />
+        </div>
+        
+        <button class="apply-filter-btn" onclick="applyAccountRangeFilter()">
+          ✨ Apply Filter
+        </button>
+      </div>
+    </div>
+    
+    <!-- Analytics Section -->
+    <div class="analytics-section">
+      <div class="analytics-controls-horizontal">
+        <button class="analytics-btn" onclick="toggleAnalyticsPanel()">
+          📊 Analytics
+        </button>
+        <div id="analyticsOptions" class="analytics-options" style="display: none;">
+          <div class="analytics-menu">
+            <button class="analytics-option-btn" onclick="showSubDivisionAnalysis()">
+              📍 Sub Division wise Account Opened Status
+            </button>
+            <button class="analytics-option-btn" onclick="showTop15Offices()">
+              🏆 Top 15 Offices - Highest Accounts
+            </button>
+            <button class="analytics-option-btn" onclick="showBottom50Offices()">
+              📉 Bottom 50 Offices - Lowest Accounts
+            </button>
+            <button class="analytics-option-btn" onclick="showTargetAchievement()">
+              🎯 Target Achievement % (placeholder - needs targets table)
+            </button>
+            <button class="analytics-option-btn" onclick="showOfficeTypeProductStatus()">
+              🏛️ Office Type & Product wise Status
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="exportButtons">
+    <button onclick="exportReport('excel')">Export Excel</button>
+    <button onclick="exportReport('pdf')">Export PDF</button>
+  </div>
+  <div id="resultArea"></div>
+  <script>
+    let currentReportData = null; // Store current report data for filtering
+    let panelVisible = false;
+    let currentSortOrder = 'desc'; // Track current sort order (default: highest to lowest)
+    
+    async function fetchCircles() {
+      try {
+        const res = await fetch('backend/fetch_circles.php');
+        const circles = await res.json();
+        
+        if (circles.error) {
+          console.error('Database error:', circles.error);
+          return;
+        }
+        
+        const circleSelect = document.getElementById('circleSelect');
+        circleSelect.innerHTML = '<option value="">Select Circle</option>';
+        circles.forEach((c) => {
+          const option = document.createElement('option');
+          option.value = c;
+          option.textContent = c;
+          circleSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error fetching circles:', error);
+      }
+    }
+    
+    async function fetchRegions() {
+      const circle = document.getElementById('circleSelect').value;
+      const regionSelect = document.getElementById('regionSelect');
+      const divisionSelect = document.getElementById('divisionSelect');
+      console.log('Selected circle:', circle);
+      // Reset and disable downstream selects
+      regionSelect.innerHTML = '<option value="">Select Region</option>';
+      regionSelect.disabled = true;
+      divisionSelect.innerHTML = '<option value="">Select Division</option>';
+      divisionSelect.disabled = true;
+      if (!circle) return;
+      try {
+        const url = 'backend/fetch_regions.php?circle=' + encodeURIComponent(circle);
+        console.log('Fetching from:', url);
+        
+        const res = await fetch(url);
+        const regions = await res.json();
+        
+        console.log('Regions response:', regions);
+        
+        if (regions.error) {
+          console.error('Database error:', regions.error);
+          return;
+        }
+        
+        if (regions && regions.length > 0) {
+          regions.forEach((r) => {
+            const option = document.createElement('option');
+            option.value = r;
+            option.textContent = r;
+            regionSelect.appendChild(option);
+          });
+          regionSelect.disabled = false;
+        } else {
+          console.log('No regions found for circle:', circle);
+        }
+      } catch (error) {
+        console.error('Error fetching regions:', error);
+      }
+    }
+    
+    async function fetchDivisions() {
+      const region = document.getElementById('regionSelect').value;
+      const divisionSelect = document.getElementById('divisionSelect');
+      console.log('Selected region:', region);
+      divisionSelect.innerHTML = '<option value="">Select Division</option>';
+      divisionSelect.disabled = true;
+      if (!region) return;
+      try {
+        const url = 'backend/fetch_divisions.php?region=' + encodeURIComponent(region);
+        console.log('Fetching from:', url);
+        
+        const res = await fetch(url);
+        const divisions = await res.json();
+        
+        console.log('Divisions response:', divisions);
+        
+        if (divisions.error) {
+          console.error('Database error:', divisions.error);
+          return;
+        }
+        
+        if (divisions && divisions.length > 0) {
+          divisions.forEach((d) => {
+            const option = document.createElement('option');
+            option.value = d;
+            option.textContent = d;
+            divisionSelect.appendChild(option);
+          });
+          divisionSelect.disabled = false;
+        } else {
+          console.log('No divisions found for region:', region);
+        }
+      } catch (error) {
+        console.error('Error fetching divisions:', error);
+      }
+    }
+    
+    function toggleAccountRangePanel() {
+      const filterControls = document.getElementById('filterControls');
+      panelVisible = !panelVisible;
+      
+      if (panelVisible) {
+        filterControls.classList.add('show');
+      } else {
+        filterControls.classList.remove('show');
+      }
+    }
+    
+    async function submitPOSB() {
+      const circle = document.getElementById('circleSelect').value;
+      const region = document.getElementById('regionSelect').value;
+      const division = document.getElementById('divisionSelect').value;
+      const start = document.getElementById('startDate').value;
+      const end = document.getElementById('endDate').value;
+      const reportType = document.querySelector('input[name="reportType"]:checked').value;
+      try {
+        const res = await fetch('backend/fetch_report.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ circle, region, division, start, end, reportType })
+        });
+        const html = await res.text();
+        document.getElementById('resultArea').innerHTML = html;
+        document.getElementById('exportButtons').style.display = reportType === 'open' ? 'flex' : 'none';
+        // Store current parameters for range filtering
+        currentReportData = { circle, region, division, start, end, reportType };
+      } catch (error) {
+        console.error('Error submitting report request:', error);
+      }
+    }
+    
+    async function applyAccountRangeFilter() {
+      if (!currentReportData) {
+        alert('Please submit a report first using the Submit button above');
+        return;
+      }
+      if (currentReportData.reportType !== 'open') {
+        alert('Account Range Filter is only available for "Account Opened Details" reports');
+        return;
+      }
+      const officeType = document.getElementById('officeTypeFilter').value;
+      const minAccounts = parseInt(document.getElementById('minAccounts').value) || 0;
+      const maxAccounts = parseInt(document.getElementById('maxAccounts').value) || 999999;
+      if (minAccounts > maxAccounts) {
+        alert('Minimum accounts cannot be greater than maximum accounts');
+        return;
+      }
+      try {
+        const requestData = {
+          ...currentReportData,
+          accountRangeFilter: true,
+          officeType: officeType,
+          minAccounts: minAccounts,
+          maxAccounts: maxAccounts
+        };
+        const res = await fetch('backend/fetch_report.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+        const html = await res.text();
+        document.getElementById('resultArea').innerHTML = html;
+      } catch (error) {
+        console.error('Error applying account range filter:', error);
+      }
+    }
+    
+    async function exportReport(format) {
+      const circle = document.getElementById('circleSelect').value;
+      const region = document.getElementById('regionSelect').value;
+      const division = document.getElementById('divisionSelect').value;
+      const start = document.getElementById('startDate').value;
+      const end = document.getElementById('endDate').value;
+      const reportType = document.querySelector('input[name="reportType"]:checked').value;
+      if (reportType !== 'open') {
+        alert('Export is available only for Account Opened Details');
+        return;
+      }
+      try {
+        const res = await fetch('backend/fetch_report.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ circle, region, division, start, end, reportType, export: format })
+        });
+        const blob = await res.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = format === 'pdf' ? 'report.pdf' : 'report.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Error exporting report:', error);
+      }
+    }
+    
+    // Analytics functionality
+    function toggleAnalyticsPanel() {
+      const analyticsOptions = document.getElementById('analyticsOptions');
+      const analyticsBtn = document.querySelector('.analytics-btn');
+      if (analyticsOptions.style.display === 'none' || analyticsOptions.style.display === '') {
+        analyticsOptions.style.display = 'block';
+        analyticsBtn.style.background = 'linear-gradient(145deg, #138496, #117a8b)';
+      } else {
+        analyticsOptions.style.display = 'none';
+        analyticsBtn.style.background = 'linear-gradient(145deg, #17a2b8, #138496)';
+      }
+    }
+    
+    function showSubDivisionAnalysis() {
+      const circle = document.getElementById('circleSelect').value;
+      const region = document.getElementById('regionSelect').value;
+      const division = document.getElementById('divisionSelect').value;
+      const start = document.getElementById('startDate').value;
+      const end = document.getElementById('endDate').value;
+      
+      // Validate inputs - same validation as your submitPOSB function
+      if (!start || !end) {
+        alert('Please select both start and end dates.');
+        return;
+      }
+      
+      if (!circle && !region && !division) {
+        alert('Please select at least one filter option (Circle, Region, or Division).');
+        return;
+      }
+      
+      // Show loading message in result area
+      document.getElementById('resultArea').innerHTML = '<div style="text-align: center; padding: 30px; color: #666;"><h3>🔄 Loading Subdivision Analysis...</h3><p>Please wait while we fetch the data.</p></div>';
+      
+      // Make AJAX request following the same pattern as submitPOSB()
+      fetch('backend/fetch_report.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          circle: circle, 
+          region: region, 
+          division: division, 
+          start: start, 
+          end: end, 
+          reportType: 'subdivision' 
+        })
+      })
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('resultArea').innerHTML = html;
+        // Hide export buttons for subdivision analysis
+        document.getElementById('exportButtons').style.display = 'none';
+      })
+      .catch(error => {
+        console.error('Error fetching subdivision analysis:', error);
+        document.getElementById('resultArea').innerHTML = '<div style="color: red; padding: 20px; text-align: center;"><h3>❌ Network Error</h3><p>Unable to fetch subdivision analysis data. Please try again.</p></div>';
+      });
+    }
+
+    // Sorting functionality for subdivision analysis table
+    function sortSubdivisionTable(order) {
+      const table = document.querySelector('#subdivisionTable');
+      if (!table) {
+        console.log('Subdivision table not found');
+        return;
+      }
+      
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      
+      // Find the index of "Total Accounts Opened" column
+      const headers = table.querySelectorAll('thead th');
+      let accountColumnIndex = -1;
+      
+      headers.forEach((header, index) => {
+        if (header.textContent.includes('Total Accounts Opened')) {
+          accountColumnIndex = index;
+        }
+      });
+      
+      if (accountColumnIndex === -1) {
+        console.log('Total Accounts Opened column not found');
+        return;
+      }
+      
+      // Sort rows based on the account column
+      rows.sort((a, b) => {
+        const aValue = parseInt(a.cells[accountColumnIndex].textContent.replace(/[^0-9]/g, '')) || 0;
+        const bValue = parseInt(b.cells[accountColumnIndex].textContent.replace(/[^0-9]/g, '')) || 0;
+        
+        if (order === 'asc') {
+          return aValue - bValue;
+        } else {
+          return bValue - aValue;
+        }
+      });
+      
+      // Clear tbody and re-add sorted rows
+      tbody.innerHTML = '';
+      rows.forEach((row, index) => {
+        // Update row background color for alternating rows
+        const bgColor = index % 2 === 0 ? '#f9f9f9' : '#ffffff';
+        row.style.backgroundColor = bgColor;
+        tbody.appendChild(row);
+      });
+      
+      // Update sort indicators
+      currentSortOrder = order;
+      updateSortIcons(order);
+    }
+    
+    function updateSortIcons(order) {
+      const ascIcon = document.querySelector('#sortAsc');
+      const descIcon = document.querySelector('#sortDesc');
+      
+      if (ascIcon && descIcon) {
+        // Remove active class from both
+        ascIcon.classList.remove('active');
+        descIcon.classList.remove('active');
+        
+        // Add active class to current sort
+        if (order === 'asc') {
+          ascIcon.classList.add('active');
+        } else {
+          descIcon.classList.add('active');
+        }
+      }
+    }
+    
+    function showTop15Offices() {
+      // Placeholder for Top 15 Offices - Highest Accounts
+      alert('🏆 Top 15 Offices - Highest Accounts\n\nThis feature will show:\n• Ranking of top performing offices\n• Account opening counts\n• Performance metrics\n\n(Implementation in progress)');
+    }
+    
+    function showBottom50Offices() {
+      // Placeholder for Bottom 50 Offices - Lowest Accounts
+      alert('📉 Bottom 50 Offices - Lowest Accounts\n\nThis feature will show:\n• Offices needing improvement\n• Support recommendations\n• Performance analysis\n\n(Implementation in progress)');
+    }
+    
+    function showTargetAchievement() {
+      // Placeholder for Target Achievement %
+      alert('🎯 Target Achievement %\n\nThis feature will show:\n• Target vs Achievement comparison\n• Percentage calculations\n• Performance indicators\n\n(Note: Requires targets table setup)\n(Implementation in progress)');
+    }
+    
+    function showOfficeTypeProductStatus() {
+      // Placeholder for Office Type & Product wise Status
+      alert('🏛️ Office Type & Product wise Status\n\nThis feature will show:\n• Analysis by office type (HO/SO/BO)\n• Product-wise breakdowns\n• Cross-tabulation reports\n\n(Implementation in progress)');
+    }
+    
+    window.onload = () => {
+      fetchCircles();
+      document.getElementById('regionSelect').disabled = true;
+      document.getElementById('divisionSelect').disabled = true;
+    };
+  </script>
+</body>
+</html>
